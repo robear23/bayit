@@ -58,35 +58,42 @@
     });
   }
 
-  /* Hero: the drawn bagel reveals a real one */
-  var stack = document.querySelector(".bagel-stack");
-  if (stack) {
-    var photos = stack.querySelectorAll(".photo-oval img");
-    var idx = 0;
-    var cycleTimer = null;
-    var show = function () {
-      photos.forEach(function (p, i) { p.classList.toggle("is-active", i === idx); });
-      stack.classList.add("is-revealed");
-    };
-    var hide = function () { stack.classList.remove("is-revealed"); };
-    var next = function () { idx = (idx + 1) % photos.length; show(); };
-    var startCycle = function () { show(); clearInterval(cycleTimer); cycleTimer = setInterval(next, 1600); };
-    var stopCycle = function () { clearInterval(cycleTimer); hide(); };
-
-    document.querySelectorAll("[data-reveal-trigger]").forEach(function (t) {
-      t.addEventListener("mouseenter", startCycle);
-      t.addEventListener("mouseleave", stopCycle);
-      t.addEventListener("focus", startCycle);
-      t.addEventListener("blur", stopCycle);
-      t.addEventListener("click", function (e) {
-        e.preventDefault();
-        if (stack.classList.contains("is-revealed")) { next(); } else { startCycle(); clearInterval(cycleTimer); }
-      });
+  /* Hero: always-on photo slideshow */
+  var show = document.querySelector("[data-slideshow]");
+  if (show) {
+    var slides = show.querySelectorAll(".slide");
+    var caption = document.querySelector("[data-slide-caption]");
+    var dotsWrap = document.querySelector("[data-slide-dots]");
+    var current = 0;
+    var timer = null;
+    var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var dots = Array.prototype.map.call(slides, function (s, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.setAttribute("aria-label", "Show photo " + (i + 1) + " of " + slides.length);
+      b.addEventListener("click", function () { go(i); restart(); });
+      dotsWrap.appendChild(b);
+      return b;
     });
-    // Touch screens never hover, so show one real bagel shortly after load.
-    if (window.matchMedia("(hover: none)").matches) {
-      setTimeout(function () { show(); }, 1400);
-    }
+    dotsWrap.parentNode.removeAttribute("aria-hidden");
+    var go = function (i) {
+      current = (i + slides.length) % slides.length;
+      slides.forEach(function (s, k) {
+        s.classList.toggle("is-active", k === current);
+        s.setAttribute("aria-hidden", k === current ? "false" : "true");
+      });
+      dots.forEach(function (d, k) { d.setAttribute("aria-current", k === current ? "true" : "false"); });
+      if (caption) caption.textContent = slides[current].querySelector("figcaption").textContent;
+    };
+    var restart = function () {
+      clearInterval(timer);
+      if (!reduceMotion) timer = setInterval(function () { go(current + 1); }, 4500);
+    };
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) { clearInterval(timer); } else { restart(); }
+    });
+    go(0);
+    restart();
   }
 
   /* Scroll reveals and line drawings */
