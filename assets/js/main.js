@@ -87,7 +87,7 @@
     };
     var restart = function () {
       clearInterval(timer);
-      if (!reduceMotion) timer = setInterval(function () { go(current + 1); }, 4500);
+      if (!reduceMotion) timer = setInterval(function () { go(current + 1); }, 700);
     };
     document.addEventListener("visibilitychange", function () {
       if (document.hidden) { clearInterval(timer); } else { restart(); }
