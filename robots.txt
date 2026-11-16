@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bayithospitality.co.uk/sitemap.xml

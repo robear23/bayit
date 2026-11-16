@@ -1,0 +1,13 @@
+{
+  "trailingSlash": true,
+  "redirects": [
+    { "source": "/s4", "destination": "/suppliers/", "permanent": true },
+    { "source": "/s4/", "destination": "/suppliers/", "permanent": true },
+    { "source": "/catering", "destination": "/cateringwholesale/", "permanent": true },
+    { "source": "/bayitbagels", "destination": "/", "permanent": true },
+    { "source": "/bayitbagels/", "destination": "/", "permanent": true }
+  ],
+  "headers": [
+    { "source": "/assets/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }] }
+  ]
+}
